@@ -1,0 +1,132 @@
+document.addEventListener('DOMContentLoaded', function() {
+    // Элементы модального окна
+    const modal = document.getElementById('myModal');
+    const modalImg = document.getElementById('modalImg');
+    const captionText = document.getElementById('caption');
+    const closeBtn = document.querySelector('.close');
+    const prevBtn = document.querySelector('.prev-btn');
+    const nextBtn = document.querySelector('.next-btn');
+
+    // Данные изображений и описаний
+    const galleries = document.querySelectorAll('.gallery');
+    const images = [];
+    const descriptions = [];
+
+    // Собираем данные из галереи
+    galleries.forEach((gallery, index) => {
+        const img = gallery.querySelector('img');
+        const desc = gallery.querySelector('.desc').textContent || '';
+        images.push(img.src);
+        descriptions.push(desc);
+    });
+
+    let currentIndex = 0;
+    let scale = 1; // Коэффициент масштабирования (1 = 100%)
+    const maxScale = 3; // Максимальное увеличение (300%)
+    const minScale = 0.5; // Минимальное уменьшение (50%)
+    const scaleStep = 0.1; // Шаг изменения масштаба
+
+    // Открытие модального окна
+    galleries.forEach((gallery, index) => {
+        gallery.querySelector('img').addEventListener('click', () => {
+            currentIndex = index;
+            modalImg.src = images[currentIndex];
+            captionText.textContent = descriptions[currentIndex];
+            modal.classList.add('show');
+            modal.style.display = 'block';
+            resetScale(); // Сбрасываем масштаб при открытии
+        });
+    });
+
+    // Закрытие модального окна
+    closeBtn.onclick = () => modal.classList.remove('show');
+    window.onclick = (event) => event.target === modal && modal.classList.remove('show');
+    document.addEventListener('keydown', (e) => {
+        if (modal.classList.contains('show')) {
+            if (e.key === 'Escape') modal.classList.remove('show');
+            if (e.key === 'ArrowLeft') prevBtn.click();
+            if (e.key === 'ArrowRight') nextBtn.click();
+            if (e.key === 'ArrowUp') zoomIn(); // Увеличение при нажатии ↑
+            if (e.key === 'ArrowDown') zoomOut(); // Уменьшение при нажатии ↓
+        }
+    });
+
+    // Прокрутка колеса мыши для зумирования
+    modalImg.addEventListener('wheel', (e) => {
+        e.preventDefault(); // Отменяем стандартное поведение (скролл страницы)
+        if (e.deltaY > 0) zoomOut(); // Колесо вниз → уменьшение
+        else zoomIn(); // Колесо вверх → увеличение
+    });
+
+    // Зумирование кнопками "назад"/"вперёд"
+    prevBtn.onclick = () => {
+        currentIndex = (currentIndex - 1 + images.length) % images.length;
+        updateModal();
+    };
+    nextBtn.onclick = () => {
+        currentIndex = (currentIndex + 1) % images.length;
+        updateModal();
+    };
+
+    // Обновление изображения и описания
+    function updateModal() {
+        modalImg.src = images[currentIndex];
+        captionText.textContent = descriptions[currentIndex];
+    }
+
+    // Увеличение изображения
+    function zoomIn() {
+        scale = Math.min(scale + scaleStep, maxScale);
+        applyScale();
+    }
+
+    // Уменьшение изображения
+    function zoomOut() {
+        scale = Math.max(scale - scaleStep, minScale);
+        applyScale();
+    }
+
+    // Сброс масштаба (100%)
+    function resetScale() {
+        scale = 1;
+        applyScale();
+    }
+
+    // Применение текущего масштаба
+    function applyScale() {
+        modalImg.style.transform = `scale(${scale})`;
+    }
+
+    // Тачпад (двухпальцевый жест)
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchCurrentX = 0;
+    let touchCurrentY = 0;
+
+    modalImg.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 2) {
+            touchStartX = e.touches[0].clientX - e.touches[1].clientX;
+            touchStartY = e.touches[0].clientY - e.touches[1].clientY;
+        }
+    }, { passive: false });
+
+    modalImg.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 2) {
+            e.preventDefault();
+            touchCurrentX = e.touches[0].clientX - e.touches[1].clientX;
+            touchCurrentY = e.touches[0].clientY - e.touches[1].clientY;
+
+            // Расстояние между пальцами до и после
+            const distanceStart = Math.sqrt(touchStartX * touchStartX + touchStartY * touchStartY);
+            const distanceCurrent = Math.sqrt(touchCurrentX * touchCurrentX + touchCurrentY * touchCurrentY);
+
+            // Изменение масштаба при приближении/удалении пальцев
+            if (distanceCurrent > distanceStart) zoomIn(); // Палец разводим → увеличиваем
+            else if (distanceCurrent < distanceStart) zoomOut(); // Палец сводим → уменьшаем
+
+            // Обновляем стартовые координаты
+            touchStartX = touchCurrentX;
+            touchStartY = touchCurrentY;
+        }
+    }, { passive: false });
+});
