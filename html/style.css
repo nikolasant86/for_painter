@@ -534,3 +534,49 @@ main {
     z-index: 1002;
     display: none;
 }
+
+.cv-description {
+    display: flex;
+    justify-content: center;
+}
+
+.cv-description-paragraf {
+    text-align: justify;
+    font-family: Palatino, URW Palladio L, serif;
+    font-size: 21px;
+    padding: 0;
+    text-indent: 20px;
+    max-width: 900px;
+}
+
+.cv-name-and-education {
+    max-width: 450px;
+    margin: 0;
+    margin-right: 25px;
+}
+
+.cv-exhibition {
+    max-width: 450px;
+    margin: 0;
+    margin-left: 25px;
+}
+
+@media (max-width: 768px) {
+    .cv-description {
+        display: flex;
+        flex-direction: column;
+        justify-content: center; /* Центр по горизонтали */
+        align-items: center; /* Центр по вертикали */
+        box-sizing: border-box;
+    }
+
+    .cv-name-and-education {
+        max-width: 450px;
+        margin: 20px;
+    }
+
+    .cv-exhibition {
+        max-width: 450px;
+        margin: 20px;
+    }
+}
