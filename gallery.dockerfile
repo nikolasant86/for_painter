@@ -1,6 +1,6 @@
 FROM python:3.12-alpine
 WORKDIR /app
-COPY gallery.py
+COPY gallery.py .
 RUN pip install cerberus
 RUN pip install requests
 RUN pip install pillow
