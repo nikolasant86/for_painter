@@ -1,0 +1,24 @@
+services:
+  nginx:
+    image: nginx:1.30.2-alpine
+    container_name: nginx
+    ports:
+      - 80:80
+    dns:
+      - 8.8.8.8      # Google DNS
+      - 1.1.1.1      # Cloudflare DNS
+    networks:
+      - logging-network
+    volumes:
+      - /etc/nginx:/etc/nginx
+      - /var/log/nginx:/var/log/nginx
+      - /home/nikolay/projects/for_painter/html:/usr/share/nginx/html:ro
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '256M'
+
+networks:
+  logging-network:
+    driver: bridge
