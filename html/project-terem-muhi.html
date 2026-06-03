@@ -78,7 +78,11 @@
             <img id="current-image" src="nesessary/images/terem-muhi-book/9page.jpg" alt="Девятая страница">
         <div id="current-desc" class="desc">Девятая страница</div>
     </div> 
--->
+  -->
+    <div id="gallery-container">
+        <p class="loading">loading images...</p>
+    </div>
+    
     <!-- МОДАЛЬНОЕ ОКНО — ПУСТОЕ ПРИ ЗАГРУЗКЕ, НЕ ОТКРЫВАЕТСЯ -->
     <div id="myModal" class="modal">
         <span class="close">&times;</span>
@@ -96,7 +100,7 @@
 </div>
     
 <script>
-  const SERVER_URL = 'http://192.168.1.19:8000';
+  const SERVER_URL = 'http://10.17.126.253:8000';
   const IMAGE_API = `${SERVER_URL}/api/images`;
   const IMAGE_ENDPOINT = `${SERVER_URL}/api/image/`;
   const MAX_SCALE = 3.0;

@@ -440,7 +440,30 @@ main {
     max-width: 100%;
 }
 
-/* Стили для модального окна */
+#gallery-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 15px;
+    margin: 40px auto;
+    padding: 20px;
+    max-width: 90%;
+}
+
+#gallery-container img {
+    width: 350px;
+    height: auto;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+#gallery-container img:hover {
+    transform: scale(1.05);
+}
+
 .modal {
     display: none;
     position: fixed;
@@ -450,75 +473,62 @@ main {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.9);
-    overflow: auto;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-}
-
-.modal.show {
-    opacity: 1;
-    pointer-events: all;
+    overflow: hidden;
+    cursor: zoom-in;
+    display: none;
+    justify-content: center;
+    align-items: center;
 }
 
 .modal-content {
-    margin: auto;
-    display: block;
-    max-width: 90%;
-    max-height: 90%;
-    margin-top: 50px;
-    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    transition: transform 0.1s ease;
+    cursor: pointer;
 }
 
 .close {
     position: absolute;
-    top: -40px;
-    right: 0;
+    top: 20px;
+    right: 30px;
     color: #f1f1f1;
     font-size: 40px;
     font-weight: bold;
     cursor: pointer;
-    transition: 0.3s;
 }
 
-.close:hover {
-    color: #bbb;
+.controls {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 1001;
 }
 
-.modal-img {
-    max-width: 100%;
-    height: auto;
-}
-
-.modal-caption {
-    text-align: center;
-    padding: 10px 0;
+.controls button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    background: #007bff;
     color: white;
-    font-size: 16px;
+    cursor: pointer;
+    font-size: 14px;
 }
 
-/* Кнопки слайдера */
-.slider-btn {
+.controls button:hover {
+    background: #0055b3;
+}
+
+.loading {
+    color: white;
+    font-size: 18px;
     position: absolute;
     top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.5);
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    cursor: pointer;
-    font-size: 18px;
-    z-index: 10;
-}
-
-.slider-btn:hover {
-    background: rgba(0, 0, 0, 0.8);
-}
-
-.prev-btn {
-    left: 10px;
-}
-
-.next-btn {
-    right: 10px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1002;
+    display: none;
 }

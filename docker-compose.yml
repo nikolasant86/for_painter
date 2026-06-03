@@ -20,7 +20,7 @@ services:
           memory: '256M'
   
   gallery:
-    image: nikolavasant/gallery:1.32
+    image: nikolavasant/gallery:1.33
     container_name: gallery
     ports:
       - 8000:8000
@@ -28,7 +28,7 @@ services:
       - logging-network
     volumes:
       - /var/log/apps/gallery:/var/log/gallery
-      - /home/nikolay/projects/for_painter/html/nesessary/images/terem-muhi-book:/app/images
+      - /home/nikolay/projects/for_painter/html/nesessary/images/terem-muhi-book/images:/app/images
     deploy:
       resources:
         limits:
