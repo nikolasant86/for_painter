@@ -35,6 +35,22 @@ services:
           cpus: '1'
           memory: '128M'
 
+  gallery1:
+    image: nikolavasant/gallery:1.34
+    container_name: gallery
+    ports:
+      - 7999:7999
+    networks:
+      - logging-network
+    volumes:
+      - /var/log/apps/gallery:/var/log/gallery
+      - /home/nikolay/projects/for_painter/html/nesessary/images/terem-muhi-book/images:/app/images
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '128M'
+
 networks:
   logging-network:
     driver: bridge
