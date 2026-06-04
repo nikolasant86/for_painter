@@ -522,11 +522,11 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
 
         self.status_code = 200
 
-        if parsed_path.path == "/api/images":
+        if parsed_path.path == "/api/v1/images":
             logger.info(
-                "Запрос к /api/images",
+                "Запрос к /api/v1/images",
                 extra={
-                    "request": "GET /api/images",
+                    "request": "GET /api/v1/images",
                     "client_ip": self.client_address[0],
                     "public_ip": public_ip,
                     "response_status": "200",
@@ -541,7 +541,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
             logger.info(
                 "Отправлен ответ: изображения",
                 extra={
-                    "request": "GET /api/images",
+                    "request": "GET /api/v1/images",
                     "client_ip": self.client_address[0],
                     "public_ip": public_ip,
                     "response_status": "200",
@@ -550,14 +550,14 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
             )
             return
 
-        elif parsed_path.path.startswith("/api/image/"):
+        elif parsed_path.path.startswith("/api/v1/image/"):
             try:
                 index_str = parsed_path.path.split("/")[-1]
                 index = int(index_str)
                 logger.info(
                     "Извлечён индекс",
                     extra={
-                        "request": f"GET /api/image/{index}",
+                        "request": f"GET /api/v1/image/{index}",
                         "client_ip": self.client_address[0],
                         "public_ip": public_ip,
                         "response_status": "200",
@@ -581,7 +581,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                 logger.error(
                     "Индекс выходит за границы",
                     extra={
-                        "request": f"GET /api/image/{index}",
+                        "request": f"GET /api/v1/image/{index}",
                         "client_ip": self.client_address[0],
                         "public_ip": public_ip,
                         "response_status": "400",
@@ -597,7 +597,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
             logger.info(
                 "Запрошен файл",
                 extra={
-                    "request": f"GET /api/image/{index}",
+                    "request": f"GET /api/v1/image/{index}",
                     "client_ip": self.client_address[0],
                     "public_ip": public_ip,
                     "response_status": "200",
@@ -619,7 +619,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                 logger.info(
                     "Файл найден. Content-Type",
                     extra={
-                        "request": f"GET /api/image/{index}",
+                        "request": f"GET /api/v1/image/{index}",
                         "client_ip": self.client_address[0],
                         "public_ip": public_ip,
                         "response_status": "200",
@@ -636,7 +636,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                             logger.info(
                                 "Кэшированное изображение — отдаём из кэша",
                                 extra={
-                                    "request": f"GET /api/image/{index} scale={scale}",
+                                    "request": f"GET /api/v1/image/{index} scale={scale}",
                                     "client_ip": self.client_address[0],
                                     "public_ip": public_ip,
                                     "response_status": "200",
@@ -655,7 +655,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                                     logger.info(
                                         "Масштабирование изображения",
                                         extra={
-                                            "request": f"GET /api/image/{index} scale={scale}",
+                                            "request": f"GET /api/v1/image/{index} scale={scale}",
                                             "client_ip": self.client_address[0],
                                             "public_ip": public_ip,
                                             "response_status": "200",
@@ -686,7 +686,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                                     logger.info(
                                         "Изображение масштабировано и закэшировано",
                                         extra={
-                                            "request": f"GET /api/image/{index} scale={scale}",
+                                            "request": f"GET /api/v1/image/{index} scale={scale}",
                                             "client_ip": self.client_address[0],
                                             "public_ip": public_ip,
                                             "response_status": "200",
@@ -698,7 +698,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                                 logger.error(
                                     "Ошибка при масштабировании",
                                     extra={
-                                        "request": f"GET /api/image/{index} scale={scale}",
+                                        "request": f"GET /api/v1/image/{index} scale={scale}",
                                         "client_ip": self.client_address[0],
                                         "public_ip": public_ip,
                                         "response_status": "500",
@@ -718,7 +718,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                     logger.info(
                         "Масштабированное изображение успешно отправлено",
                         extra={
-                            "request": f"GET /api/image/{index} scale={scale}",
+                            "request": f"GET /api/v1/image/{index} scale={scale}",
                             "client_ip": self.client_address[0],
                             "public_ip": public_ip,
                             "response_status": "200",
@@ -737,7 +737,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                     logger.info(
                         "Оригинальное изображение успешно отправлено",
                         extra={
-                            "request": f"GET /api/image/{index}",
+                            "request": f"GET /api/v1/image/{index}",
                             "client_ip": self.client_address[0],
                             "public_ip": public_ip,
                             "response_status": "200",
@@ -749,7 +749,7 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
                 logger.error(
                     "Файл не найден",
                     extra={
-                        "request": f"GET /api/image/{index}",
+                        "request": f"GET /api/v1/image/{index}",
                         "client_ip": self.client_address[0],
                         "public_ip": public_ip,
                         "response_status": "404",
