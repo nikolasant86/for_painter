@@ -125,7 +125,7 @@ main {
 }
 
 .author-img {
-    max-width: 900px;
+    max-width: 600px;
     height: auto;
 }
 
@@ -175,6 +175,9 @@ main {
 }
 
 .project-title {
+    border: rgba(245, 242, 237, 0.952) 30px;
+    padding: 50px;
+    margin-top: 60px;
     margin-left: 60px;
     text-align: left;
 }

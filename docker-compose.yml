@@ -47,7 +47,22 @@ services:
       resources:
         limits:
           cpus: '1'
-          memory: '256M'
+          memory: '128M'
+
+  gallery2:
+    image: nikolavasant/gallery:1.38
+    container_name: gallery2
+    ports:
+      - 7998:7998
+    networks:
+      - logging-network
+    volumes:
+      - /var/log/apps/gallery-magic:/var/log/gallery
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '128M'
 
 networks:
   logging-network:
