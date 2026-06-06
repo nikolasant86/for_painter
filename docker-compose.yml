@@ -79,6 +79,21 @@ services:
           cpus: '1'
           memory: '128M'
 
+  gallery4:
+    image: nikolavasant/gallery:1.40
+    container_name: gallery4
+    ports:
+      - 7996:7996
+    networks:
+      - logging-network
+    volumes:
+      - /var/log/apps/gallery-king:/var/log/gallery
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '128M'
+
 networks:
   logging-network:
     driver: bridge
