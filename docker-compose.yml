@@ -28,7 +28,96 @@ services:
       - logging-network
     volumes:
       - /var/log/apps/gallery:/var/log/gallery
-      - /home/nikolay/projects/for_painter/html/nesessary/images/terem-muhi-book/images:/app/images
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '128M'
+
+  gallery1:
+    image: nikolavasant/gallery:1.37
+    container_name: gallery1
+    ports:
+      - 7999:7999
+    networks:
+      - logging-network
+    volumes:
+      - /var/log/apps/gallery-arthur:/var/log/gallery
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '128M'
+
+  gallery2:
+    image: nikolavasant/gallery:1.38
+    container_name: gallery2
+    ports:
+      - 7998:7998
+    networks:
+      - logging-network
+    volumes:
+      - /var/log/apps/gallery-magic:/var/log/gallery
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '128M'
+
+  gallery3:
+    image: nikolavasant/gallery:1.39
+    container_name: gallery3
+    ports:
+      - 7997:7997
+    networks:
+      - logging-network
+    volumes:
+      - /var/log/apps/gallery-fisher:/var/log/gallery
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '128M'
+
+  gallery4:
+    image: nikolavasant/gallery:1.40
+    container_name: gallery4
+    ports:
+      - 7996:7996
+    networks:
+      - logging-network
+    volumes:
+      - /var/log/apps/gallery-king:/var/log/gallery
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '128M'
+
+  gallery5:
+    image: nikolavasant/gallery:1.41
+    container_name: gallery5
+    ports:
+      - 7995:7995
+    networks:
+      - logging-network
+    volumes:
+      - /var/log/apps/gallery-king:/var/log/gallery
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: '128M'
+
+  gallery6:
+    image: nikolavasant/gallery:1.42
+    container_name: gallery6
+    ports:
+      - 7994:7994
+    networks:
+      - logging-network
+    volumes:
+      - /var/log/apps/gallery-king:/var/log/gallery
     deploy:
       resources:
         limits:
