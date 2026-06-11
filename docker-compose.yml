@@ -111,7 +111,7 @@ services:
 
   gallery6:
     image: nikolavasant/gallery:1.42
-    container_name: gallery5
+    container_name: gallery6
     ports:
       - 7994:7994
     networks:
