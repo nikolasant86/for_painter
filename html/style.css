@@ -16,7 +16,7 @@ main {
 }
 
 .main-theme {
-    height: 1200px;
+    height: 800px;
     max-width: 100%;
 }
 
@@ -46,15 +46,19 @@ main {
     justify-content: space-between;
     align-items: center;
     padding: 8px 16px;
-    background: linear-gradient(135deg, #FFD166, #FFF5E6);
+    display: inline-block;
+    transition: transform 0.3s ease;
     border-radius: 8px;
     border: 1px solid #E0D5C7;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease;
+    color:#2a312e;
 }
 
 .logotip:hover {
     color: #222; 
+    text-shadow: 0 0 30px #9e5a01;
+    transform: translateY(-2px);
 }
 
 .navigation-buttons {
@@ -98,18 +102,94 @@ main {
 
 .catalog-button {
     text-decoration: none;
+    color: #2a312e;
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.catalog-button span {
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.catalog-button span:hover {
+    transform: translateY(-5px);
+    animation: jump 0.4s ease infinite alternate;
+}
+
+.catalog-button:hover {
+    color: #222;
+    text-shadow: 0 0 30px #9e5a01;
+    transform: translateY(-2px);
 }
 
 .projects-button {
     text-decoration: none;
+    color: #2a312e;
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.projects-button span {
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.projects-button span:hover {
+    transform: translateY(-5px);
+    animation: jump 0.4s ease infinite alternate;
+}
+
+.projects-button:hover {
+    color: #222;
+    text-shadow: 0 0 30px #9e5a01;
+    transform: translateY(-2px);
 }
 
 .about-button {
     text-decoration: none;
+    color: #2a312e;
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.about-button span {
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.about-button span:hover {
+    transform: translateY(-5px);
+    animation: jump 0.4s ease infinite alternate;
+}
+
+.about-button:hover {
+    color: #222;
+    text-shadow: 0 0 30px #9e5a01;
+    transform: translateY(-2px);
 }
 
 .contacts-button {
     text-decoration: none;
+    color: #2a312e;
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.contacts-button span {
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.contacts-button span:hover {
+    transform: translateY(-5px);
+    animation: jump 0.4s ease infinite alternate;
+}
+
+.contacts-button:hover {
+    color: #222;
+    text-shadow: 0 0 30px #9e5a01;
+    transform: translateY(-2px);
 }
 
 .title-block {
@@ -573,6 +653,10 @@ main {
     font-family: Palatino, URW Palladio L, serif;
     font-size: 25px;
     text-indent: 20px;
+}
+
+.project-description span {
+    font-weight: 800;
 }
 
 @media (max-width: 768px) {
