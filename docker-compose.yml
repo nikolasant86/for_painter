@@ -11,8 +11,9 @@ services:
       - logging-network
     volumes:
       - /etc/nginx:/etc/nginx
+      - /etc/nginx/confd/site.conf:/home/nikolas/projects/for_painter/site.conf
       - /var/log/nginx:/var/log/nginx
-      - /home/nikolay/projects/for_painter/html:/usr/share/nginx/html:ro
+      - /home/nikolas/projects/for_painter/html:/usr/share/nginx/html:ro
     deploy:
       resources:
         limits:
