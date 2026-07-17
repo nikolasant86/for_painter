@@ -28,6 +28,10 @@ main {
     background-color: rgba(245, 242, 237, 0.952);
 }
 
+.in-navigation-pannel, .logotip-button {
+    position: relative;
+}
+
 .logotip-button {
     display: flex;
     justify-content: space-between;
@@ -78,26 +82,40 @@ main {
 }
 
 @media (max-width: 768px) {
-  .navigation-buttons {
-    display: none;
-    flex-direction: column;
-    position: absolute;
-    top: 60px;
-    left: 0;
-    right: 0;
-    background: #fff;
-    padding: 10px;
-    gap: 5px;
-  }
+    /* Показываем кнопку бургера */
+    .menu-toggle {
+        display: block;
+        cursor: pointer;
+        background: none;
+        border: none;
+        font-size: 24px;
+    }
 
-  .navigation-buttons.active {
-    display: flex;
-  }
+    /* Изначально скрываем меню и выстраиваем ссылки вертикально */
+    .navigation-buttons {
+        display: none; 
+        position: absolute;
+        top: 60px; /* Высота подстраивается под твою шапку */
+        left: 0;
+        width: 100%;
+        background-color: rgba(245, 242, 237, 0.98); /* В цвет сайта */
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 0;
+        box-shadow: 0px 4px 6px rgba(0,0,0,0.05);
+        z-index: 999;
+    }
 
-  .menu-toggle {
-    margin-top: 10px;
-    display: block;
-  }
+    /* Когда JavaScript добавляет класс .active — меню показывается */
+    .navigation-buttons.active {
+        display: flex !important;
+    }
+
+    .navigation-buttons a {
+        padding: 15px 0;
+        width: 100%;
+        text-align: center;
+    }
 }
 
 .catalog-button {
@@ -213,14 +231,31 @@ main {
     .title-block {
         display: flex;
         flex-direction: column;
-        position: absolute;
-        padding: 20px;
-        max-width: 400px;
+        position: relative;
+        padding: 0 20px;
+        max-width: 100%;
+        margin: 20 px auto;
+        width: 100%;
+        align-items: center;
+        text-align: center;
+        box-sizing: border-box;
     }
 
-    .author-img {
-        max-width: 350px;
+    .title-block img {
+        max-width: 80%;
         height: auto;
+        margin-bottom: 15px;
+    }
+
+    .title-block h1 {
+        font-size: 28px;
+        line-height: 1.2;
+        margin-bottom: 10px;
+    }
+
+    .title-block p {
+        font-size: 16px;
+        line-height: 1.4;
     }
 }
 
@@ -687,3 +722,216 @@ main {
     }
 }
 
+/* Контейнер галереи */
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 колонки на десктопе */
+    gap: 28px; /* Отступы между постами, как в Insta */
+    max-width: 935px; /* Стандартная ширина контента Instagram */
+    margin: 0 auto padding-bottom;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+/* Элемент галереи */
+.gallery-item {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1; /* Делает элемент строго квадратным */
+    overflow: hidden;
+    display: block;
+    background-color: #e0d5c7;
+}
+
+/* Картинка внутри */
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Обрезает картинку по квадрату без деформации */
+    transition: transform 0.5s ease;
+}
+
+/* Эффект наведения (темный слой, как в веб-версии Instagram) */
+.item-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4); /* Полупрозрачный черный */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    padding: 15px;
+    box-sizing: border-box;
+}
+
+.item-text {
+    color: #ffffff;
+    font-family: 'Palatino', serif;
+    font-size: 18px;
+    text-align: center;
+    line-height: 1.4;
+}
+
+/* Логика ховера */
+.gallery-item:hover img {
+    transform: scale(1.05); /* Легкое увеличение картинки */
+}
+
+.gallery-item:hover .item-overlay {
+    opacity: 1; /* Проявление текста */
+}
+
+/* Адаптивность под мобильные устройства */
+@media (max-width: 768px) {
+    .project-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 колонки на планшетах */
+        gap: 10px; /* Меньше отступы */
+    }
+    .item-text {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .project-grid {
+        grid-template-columns: repeat(3, 1fr); /* 3 в ряд на мобилках, прямо как в приложении Instagram */
+        gap: 3px; /* Минимальные швы */
+        padding: 0;
+    }
+    
+    /* На мобильных тач-скринах ховер неудобен, можно отключить overlay или сделать его видимым всегда */
+    .item-overlay {
+        display: none; /* Скрываем текст на смартфонах, оставляя чистый визуал */
+    }
+}
+
+/* 📸 Значок мульти-изображения (Instagram Carousel Icon) */
+.carousel-icon {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ffffff;
+    border-radius: 3px;
+    background-color: transparent;
+    z-index: 5; /* Чтобы значок был поверх картинки */
+    filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.5)); /* Тень, чтобы иконку было видно на белых рисунках */
+    transition: opacity 0.3s ease;
+}
+
+/* Второй фоновый квадратик для создания эффекта слоя */
+.carousel-icon::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 16px;
+    height: 16px;
+    border-top: 2px solid #ffffff;
+    border-right: 2px solid #ffffff;
+    border-radius: 3px;
+}
+
+/* 🌟 Дополнительный интерактив: скрываем значок, когда пользователь наводит мышь на десктопе, 
+   так как в этот момент проявляется текстовая плашка */
+.gallery-item:hover .carousel-icon {
+    opacity: 0;
+}
+
+/* Адаптация под мобильные устройства */
+@media (max-width: 480px) {
+    .carousel-icon {
+        top: 8px;
+        right: 8px;
+        width: 12px;
+        height: 12px;
+        border-width: 1.5px;
+    }
+    .carousel-icon::after {
+        top: -4px;
+        right: -4px;
+        width: 12px;
+        height: 12px;
+        border-width: 1.5px;
+    }
+    
+    /* На смартфонах ховер-текста нет, поэтому значок должен гореть ВСЕГДА */
+    .gallery-item:hover .carousel-icon {
+        opacity: 1;
+    }
+}
+
+/* Контейнер модального окна */
+.modal {
+    display: none; /* Переключается на 'flex' через JS класс .show */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    height: 100% !important;
+    background-color: rgba(0, 0, 0, 0.9); /* Темный фон */
+    
+    /* Центрируем всё внутри модалки на уровне самого контейнера */
+    justify-content: center;
+    align-items: center;
+}
+
+/* Класс, который JS добавляет при открытии */
+.modal.show {
+    display: flex !important;
+}
+
+/* Обертка для контента */
+.modal-content-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    padding: 10px; /* Чуть уменьшил отступы для мобильных экранов */
+    box-sizing: border-box;
+}
+
+/* Сама картинка */
+.modal-content {
+    max-width: 95%; /* Разрешаем занимать чуть больше места на мобилках */
+    max-height: 85vh; /* Ограничиваем по высоте, чтобы не вылезала за экран */
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    transition: transform 0.1s ease; /* Плавный зум */
+    display: block;
+    margin: auto; /* Авто-отступы центрируют картинку в любых непонятных ситуациях */
+}
+
+/* Кнопка закрытия (крестик) сверху справа */
+.close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: #fff;
+    font-size: 35px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 1010;
+    padding: 10px; /* Увеличиваем зону клика для пальцев */
+}
+
+/* МЕДИА-ЗАПРОС ДЛЯ СМАРТФОНОВ */
+@media (max-width: 768px) {
+    .modal-content {
+        max-width: 98%;
+        max-height: 80vh; /* Оставляем место сверху/снизу под пальцы */
+    }
+    .close {
+        top: 10px;
+        right: 15px;
+        font-size: 40px; /* Делаем крестик крупнее, чтобы по нему было легче попасть */
+    }
+}

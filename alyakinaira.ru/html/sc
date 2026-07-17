@@ -130,3 +130,23 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, { passive: false });
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navigationButtons = document.querySelector('.navigation-buttons');
+
+    if (menuToggle && navigationButtons) {
+        menuToggle.addEventListener('click', function() {
+            // Переключаем класс active у меню
+            navigationButtons.classList.toggle('active');
+            
+            // Опционально: меняем иконку ☰ на ✕ при открытии
+            if (navigationButtons.classList.contains('active')) {
+                menuToggle.textContent = '✕';
+            } else {
+                menuToggle.textContent = '☰';
+            }
+        });
+    }
+});
+
