@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Алякина Ирина | {{ project_title }}</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div class="first-block">
+        <div class="navigation-pannel">
+            <nav class="in-navigation-pannel">
+                <div class="logotip-button">
+                    <a class="logotip" href="/">ALYAKINA</a>
+                    <button class="menu-toggle" aria-label="Открыть меню">☰</button>
+                    <div class="navigation-buttons">
+                        <a class="projects-button" href="/#projects"><span>К</span><span>Н</span><span>И</span><span>Ж</span><span>Н</span><span>Ы</span><span>Е</span> <span>П</span><span>Р</span><span>О</span><span>Е</span><span>К</span><span>Т</span><span>Ы</span></a>
+                        <a class="about-button" href="/#artist-statement"><span>О</span><span>Б</span><span>О</span> <span>М</span><span>Н</span><span>Е</span></a>
+                        <!-- <a class="catalog-button" href="/catalog.html"><span>К</span><span>А</span><span>Т</span><span>А</span><span>Л</span><span>О</span><span>Г</span></a> -->
+                        <a class="contacts-button" href="/#contacts"><span>К</span><span>О</span><span>Н</span><span>Т</span><span>А</span><span>К</span><span>Т</span><span>Ы</span></a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <div class="second-block">
+        <h1 style="text-align: center; font-family: Palatino, serif; margin-top: 30px;">{{ project_title }}</h1>
+        
+        <div id="gallery-container">
+            <p class="loading">Загрузка иллюстраций...</p>
+        </div>
+    </div>
+
+    <div id="myModal" class="modal">
+        <span class="close">&times;</span>
+        <div class="modal-nav">
+            <button id="prevBtn" class="nav-btn">&lsaquo;</button>
+            <div class="modal-content-wrapper">
+                <img class="modal-content" id="modalImg" alt="Увеличенное изображение">
+            </div>
+            <button id="nextBtn" class="nav-btn">&rsaquo;</button>
+        </div>
+        <div class="modal-controls">
+            <button id="resetBtn" class="control-btn">Сбросить зум</button>
+        </div>
+    </div>
+
+    <script src="/script.js"></script>
+    <script>
+        // Передаем ID проекта из Flask бэкенда в JS скрипт страницы
+        const currentProject = "{{ project_name }}";
+        
+        // Сюда вставляется твой JS код логики fetch запросов к API 
+        // для рендеринга картинок внутри конкретной папки currentProject
+    </script>
+</body>
+</html>
