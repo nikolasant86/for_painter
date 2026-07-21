@@ -190,76 +190,103 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // === ТАЧ-ЖЕСТЫ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ (ЗУМ И ПЕРЕМЕЩЕНИЕ) ===
-    let touchStartX = 0;
-    let touchStartY = 0;
-    let lastTapTime = 0;
-    
-    // Переменные для сдвига (панорамирования)
-    let translateX = 0;
-    let translateY = 0;
-    let startCenterX = 0;
-    let startCenterY = 0;
+    // === ТАЧ-ЖЕСТЫ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ (ПЛАВНЫЙ ЗУМ И ТРЕХШАГОВЫЙ ТАП) ===
+let touchStartX = 0;
+let touchStartY = 0;
+let initialPinchDistance = 0; // Фиксируем начальное расстояние между пальцами
+let initialScaleOnPinch = 1;   // Запоминаем масштаб на старт жеста
+let lastTapTime = 0;
 
-    if (modalImg) {
-        modalImg.addEventListener('touchstart', (e) => {
-            // Обработка двойного тапа (одним пальцем)
-            if (e.touches.length === 1) {
-                const currentTime = new Date().getTime();
-                const tapLength = currentTime - lastTapTime;
-                
-                if (tapLength < 300 && tapLength > 0) {
-                    e.preventDefault();
-                    if (scale === 1) {
-                        setCustomScale(1.25);
-                    } else {
-                        resetScale();
-                    }
-                }
-                lastTapTime = currentTime;
-            }
+// Переменные для сдвига (панорамирования)
+let translateX = 0;
+let translateY = 0;
+let startCenterX = 0;
+let startCenterY = 0;
 
-            // Инициализация жестов двумя пальцами (зум + сдвиг)
-            if (e.touches.length === 2) {
-                // Фиксируем стартовое расстояние для зума
-                touchStartX = e.touches[0].clientX - e.touches[1].clientX;
-                touchStartY = e.touches[0].clientY - e.touches[1].clientY;
-
-                // Находим центральную точку между двумя пальцами в момент касания
-                startCenterX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - translateX;
-                startCenterY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - translateY;
-            }
-        }, { passive: false });
-
-        modalImg.addEventListener('touchmove', (e) => {
-            if (e.touches.length === 2) {
+if (modalImg) {
+    modalImg.addEventListener('touchstart', (e) => {
+        // 1. ОБРАБОТКА МНОГОШАГОВОГО ДВОЙНОГО ТАПА (Одним пальцем)
+        if (e.touches.length === 1) {
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTapTime;
+            
+            if (tapLength < 300 && tapLength > 0) {
                 e.preventDefault();
-                
-                // 1. ЛОГИКА ЗУМА (Pinch)
-                let touchCurrentX = e.touches[0].clientX - e.touches[1].clientX;
-                let touchCurrentY = e.touches[0].clientY - e.touches[1].clientY;
 
-                const distanceStart = Math.sqrt(touchStartX * touchStartX + touchStartY * touchStartY);
-                const distanceCurrent = Math.sqrt(touchCurrentX * touchCurrentX + touchCurrentY * touchCurrentY);
-
-                if (distanceCurrent > distanceStart) zoomIn();
-                else if (distanceCurrent < distanceStart) zoomOut();
-
-                touchStartX = touchCurrentX;
-                touchStartY = touchCurrentY;
-
-                // 2. ЛОГИКА СДВИГА (Pan)
-                // Сдвигаем картинку, только если она действительно увеличена
-                if (scale > 1) {
-                    const currentCenterX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-                    const currentCenterY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-
-                    translateX = currentCenterX - startCenterX;
-                    translateY = currentCenterY - startCenterY;
-
-                    applyScale(); // Применяем сдвиг вместе с масштабом
+                // Трехшаговая логика: 100% -> 150% -> 200% -> 100%
+                if (scale < 1.45) {
+                    setCustomScale(1.5); // Шаг 1: 150%
+                } else if (scale >= 1.45 && scale < 1.95) {
+                    setCustomScale(2.0); // Шаг 2: 200%
+                } else {
+                    resetScale();        // Шаг 3: Сброс до 100%
                 }
             }
-        }, { passive: false });
-    }
+            lastTapTime = currentTime;
+        }
+
+        // 2. ИНИЦИАЛИЗАЦИЯ ЖЕСТА ДВУМЯ ПАЛЬЦАМИ
+        if (e.touches.length === 2) {
+            e.preventDefault();
+
+            // Точки для расчёта начальной дистанции зума
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            
+            initialPinchDistance = Math.hypot(dx, dy); // Точная дистанция через Math.hypot
+            initialScaleOnPinch = scale;               // Фиксируем масштаб ДО начала движения
+
+            // Центр между пальцами для сдвига
+            startCenterX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - translateX;
+            startCenterY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - translateY;
+        }
+    }, { passive: false });
+
+    modalImg.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 2) {
+            e.preventDefault();
+
+            // 1. ЛОГИКА ПЛАВНОГО ЗУМА (Pinch)
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            const currentPinchDistance = Math.hypot(dx, dy);
+
+            if (initialPinchDistance > 0) {
+                // Вычисляем плавный коэффициент изменения
+                const pinchRatio = currentPinchDistance / initialPinchDistance;
+                
+                // Рассчитываем новый масштаб пропорционально движению пальцев
+                let newScale = initialScaleOnPinch * pinchRatio;
+
+                // Ограничиваем масштаб от 1x до 4x (чтобы картинка не улетала в бесконечность)
+                newScale = Math.min(Math.max(newScale, 1), 4);
+
+                // Обновляем масштаб только если он меняется
+                scale = newScale;
+            }
+
+            // 2. ЛОГИКА СДВИГА (Pan) - Срабатывает параллельно и без скачков scale
+            if (scale > 1) {
+                const currentCenterX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+                const currentCenterY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+
+                translateX = currentCenterX - startCenterX;
+                translateY = currentCenterY - startCenterY;
+            }
+
+            // Применяем одновременно сдвиг и новый плавный масштаб
+            applyScale();
+        }
+    }, { passive: false });
+
+    modalImg.addEventListener('touchend', (e) => {
+        // Если пальцы подняты и масштаб меньше 1, сбрасываем в дефолт
+        if (e.touches.length < 2) {
+            initialPinchDistance = 0;
+            if (scale < 1) {
+                resetScale();
+            }
+        }
+    });
+}
 });
