@@ -90,6 +90,17 @@ main {
     cursor: pointer;
 }
 
+/* 1. ЭФФЕКТ НАВЕДЕНИЯ ТОЛЬКО ДЛЯ МЫШКИ (Десктопы) */
+/* Оборачиваем ваш ховер в media (hover: hover) — на телефонах он просто не активируется! */
+@media (hover: hover) {
+    .navigation-buttons a:hover,
+    .navigation-buttons a:hover * {
+        /* Здесь ваши десктопные стили для подъема букв, если они были */
+    }
+}
+
+
+/* 2. АДАПТИВ ДЛЯ МОБИЛЬНЫХ (До 768px) */
 @media (max-width: 768px) {
     /* Показываем кнопку бургера */
     .menu-toggle {
@@ -100,14 +111,14 @@ main {
         font-size: 24px;
     }
 
-    /* Изначально скрываем меню и выстраиваем ссылки вертикально */
+    /* Меню */
     .navigation-buttons {
         display: none; 
         position: absolute;
-        top: 60px; /* Высота подстраивается под твою шапку */
+        top: 60px;
         left: 0;
         width: 100%;
-        background-color: rgba(245, 242, 237, 0.98); /* В цвет сайта */
+        background-color: rgba(245, 242, 237, 0.98);
         flex-direction: column;
         align-items: center;
         padding: 20px 0;
@@ -115,7 +126,6 @@ main {
         z-index: 999;
     }
 
-    /* Когда JavaScript добавляет класс .active — меню показывается */
     .navigation-buttons.active {
         display: flex !important;
     }
@@ -124,22 +134,25 @@ main {
         padding: 15px 0;
         width: 100%;
         text-align: center;
-        
-        /* Снимаем подсвечивание и залипание на тачскринах */
-        -webkit-tap-highlight-color: transparent; 
-        
-        /* Гарантируем сброс анимаций/сдвигов в обычное состояние */
-        transform: none !important;
-        top: 0 !important;
+        -webkit-tap-highlight-color: transparent;
     }
 
-    /* ИСПРАВЛЕНИЕ ЗАЛИПАНИЯ: сбрасываем :focus, :active и :hover после тапа */
+    /* ПОЛНЫЙ СБРОС СДВИГОВ ДЛЯ ССЫЛОК И ВСЕХ ВЛОЖЕННЫХ БУКВ/ТЕГОВ */
+    .navigation-buttons a,
+    .navigation-buttons a *,
+    .navigation-buttons a:hover,
+    .navigation-buttons a:hover *,
     .navigation-buttons a:focus,
+    .navigation-buttons a:focus *,
     .navigation-buttons a:active,
-    .navigation-buttons a:hover {
-        transform: none !important; /* Отменяет подъем букв */
-        top: 0 !important;           /* Если подъем сделан через top/margin */
-        outline: none;               /* Убирает системную рамку фокуса */
+    .navigation-buttons a:active * {
+        transform: none !important;
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+        top: 0 !important;
+        position: static !important; /* Убирает сдвиги, если буквы позиционировались относительно */
+        display: inline !important;  /* Возвращает буквы в стандартный поток */
+        outline: none !important;
     }
 }
 
