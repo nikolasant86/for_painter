@@ -20,6 +20,15 @@ main {
     max-width: 100%;
 }
 
+@media (max-width: 768px) {
+    .main-theme {
+        height: auto;          /* Убираем жесткие 800px, блок сжимается по контенту */
+        min-height: fit-content;/* Гарантирует аккуратную высоту без пустоты */
+        padding-top: 20px;     /* Умеренный отступ сверху (подгоняй при необходимости) */
+        padding-bottom: 20px;  /* Умеренный отступ снизу */
+    }
+}
+
 .navigation-pannel {
     height: 50px;
     max-width: 100%;
@@ -115,6 +124,22 @@ main {
         padding: 15px 0;
         width: 100%;
         text-align: center;
+        
+        /* Снимаем подсвечивание и залипание на тачскринах */
+        -webkit-tap-highlight-color: transparent; 
+        
+        /* Гарантируем сброс анимаций/сдвигов в обычное состояние */
+        transform: none !important;
+        top: 0 !important;
+    }
+
+    /* ИСПРАВЛЕНИЕ ЗАЛИПАНИЯ: сбрасываем :focus, :active и :hover после тапа */
+    .navigation-buttons a:focus,
+    .navigation-buttons a:active,
+    .navigation-buttons a:hover {
+        transform: none !important; /* Отменяет подъем букв */
+        top: 0 !important;           /* Если подъем сделан через top/margin */
+        outline: none;               /* Убирает системную рамку фокуса */
     }
 }
 
@@ -275,6 +300,11 @@ main {
     font-size: 3rem;
 }
 
+.block-connect {
+    text-align: center;
+    font-size: 22px;
+}
+
 .home-hero-main-theme {
     display: flex;
     justify-content: center;
@@ -336,6 +366,23 @@ main {
     font-size: 25px;
     padding: 20px;
     text-indent: 20px;
+    overflow-wrap: break-word;
+}
+
+@media (max-width: 768px) {
+    .story {
+        /* Включаем автоматический перенос слов по слогам */
+        -webkit-hyphens: auto;
+        hyphens: auto;
+        
+        /* Выравнивание по левому краю смотрится на смартфонах опрятнее */
+        text-align: justify; 
+        
+        /* Адаптируем размеры под узкие экраны */
+        font-size: 25px; 
+        padding: 20px;
+        text-indent: 20px;
+    }
 }
 
 .story-img {
@@ -490,6 +537,23 @@ main {
     padding: 20px;
     text-indent: 20px;
     max-width: 900px;
+    overflow-wrap: break-word;
+}
+
+@media (max-width: 768px) {
+    .about-me-description-paragraf {
+        /* Включаем автоматический перенос слов по слогам */
+        -webkit-hyphens: auto;
+        hyphens: auto;
+        
+        /* Выравнивание по левому краю смотрится на смартфонах опрятнее */
+        text-align: justify; 
+        
+        /* Адаптируем размеры под узкие экраны */
+        font-size: 25px; 
+        padding: 20px;
+        text-indent: 20px;
+    }
 }
 
 .about-me-section {
