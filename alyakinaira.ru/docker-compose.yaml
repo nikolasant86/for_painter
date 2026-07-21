@@ -4,12 +4,17 @@ services:
     container_name: web-nginx
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       # Пробрасываем конфигурацию сайта
       - ./nginx/site.conf:/etc/nginx/conf.d/default.conf:ro
       # Пробрасываем фронтенд (HTML, CSS, JS)
       - ./html:/usr/share/nginx/html
       - /home/nikolas/projects/for_painter/alyakinaira.ru/html/nesessary/images:/usr/share/nginx/html/media
+      # Тома для работы SSL и Certbot
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - webroot:/var/www/certbot
     depends_on:
       - gallery
     networks:
@@ -29,7 +34,7 @@ services:
       - GALLERY_PORT=8000
       - GALLERY_IMAGES_DIR=/app/media
     volumes:
-      # 🌟 УКАЖИ ЗДЕСЬ СВОЙ ПУТЬ К ПАПКЕ С КАРТИНКАМИ НА СЕРВЕРЕ:
+      # УКАЖИ ЗДЕСЬ СВОЙ ПУТЬ К ПАПКЕ С КАРТИНКАМИ НА СЕРВЕРЕ:
       - /home/nikolas/projects/for_painter/alyakinaira.ru/html/nesessary/images:/app/media:ro
       # Логи Flask приложения
       - /var/log/apps/gallery:/var/log/gallery
@@ -40,7 +45,26 @@ services:
         limits:
           cpus: '1'
           memory: '256M'
+  # Добавляем сервис Certbot для автоматического обновления сертификатов
+  certbot:
+    image: certbot/certbot
+    container_name: certbot-ssl
+    volumes:
+      - /var/log/letsencrypt:/var/log/letsencrypt
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - webroot:/var/www/certbot
+    # Проверка обновлений каждые 12 часов
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done'"
+    networks:
+      - app-network
 
 networks:
   app-network:
     driver: bridge
+
+# Объявляем именованные тома для сохранения сертификатов
+volumes:
+  certbot-etc:
+  certbot-var:
+  webroot:
