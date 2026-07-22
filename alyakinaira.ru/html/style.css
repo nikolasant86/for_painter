@@ -559,7 +559,6 @@ main {
         -webkit-hyphens: auto;
         hyphens: auto;
         
-        /* Выравнивание по левому краю смотрится на смартфонах опрятнее */
         text-align: justify; 
         
         /* Адаптируем размеры под узкие экраны */
@@ -681,6 +680,21 @@ main {
     padding: 0;
     text-indent: 20px;
     max-width: 900px;
+}
+
+@media (max-width: 768px) {
+    .cv-description-paragraf {
+        /* Включаем автоматический перенос слов по слогам */
+        -webkit-hyphens: auto;
+        hyphens: auto;
+        
+        text-align: justify; 
+        
+        /* Адаптируем размеры под узкие экраны */
+        font-size: 18px; 
+        padding: 20px;
+        text-indent: 20px;
+    }
 }
 
 .cv-name-and-education {
