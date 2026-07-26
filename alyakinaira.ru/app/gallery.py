@@ -7,6 +7,19 @@ from cerberus import Validator
 app = Flask(__name__, template_folder='templates')
 CORS(app) 
 
+# 🌟 Настройка логирования для Flask под Gunicorn
+if __name__ != '__main__':
+    # Если запущен через Gunicorn, используем логгер Gunicorn
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
+    logging.getLogger().handlers = gunicorn_logger.handlers
+    logging.getLogger().setLevel(gunicorn_logger.level)
+else:
+    # Для локальной разработки без Gunicorn
+    logging.basicConfig(level=logging.INFO)
+    app.logger.setLevel(logging.INFO)
+
 PORT = int(os.environ.get("GALLERY_PORT", "8000"))
 IMAGES_DIR = os.environ.get("GALLERY_IMAGES_DIR", "/app/media")
 
@@ -28,6 +41,7 @@ v = Validator(schema)
 @app.route('/project/<project_id>')
 def render_project_page(project_id):
     if project_id not in PROJECT_MAP:
+        app.logger.warning(f"Project not found: {project_id}")
         abort(404)
     
     title = PROJECT_MAP[project_id]
@@ -39,18 +53,22 @@ def get_image_info():
     image_id = request.args.get('image_id') # Например: "terem-muhi-book/01"
     
     if not image_id:
+        app.logger.warning("API call failed: Missing image_id")
         return jsonify({"error": "Missing image_id"}), 400
         
     if not v.validate({"image_id": image_id}):
+        app.logger.warning(f"API call failed: Invalid image_id '{image_id}'")
         return jsonify({"error": "Invalid image_id"}), 400
 
     # Безопасно формируем путь к файлу на сервере
     file_path = os.path.join(IMAGES_DIR, f"{image_id}.jpg")
 
     if not os.path.exists(file_path):
+        app.logger.error(f"Image file not found: {file_path}")
         return jsonify({"error": "Image not found"}), 404
 
     # Возвращаем относительный URL, который обрабатывается Nginx статической папкой nesessary/images
+    app.logger.info(f"Image info retrieved successfully for: {image_id}")
     return jsonify({
         "status": "success",
         "image_id": image_id,

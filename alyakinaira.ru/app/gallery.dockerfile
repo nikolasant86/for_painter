@@ -11,4 +11,11 @@ RUN pip install --no-cache-dir flask gunicorn flask-cors cerberus pillow request
 EXPOSE 8000
 
 # Запуск приложения через WSGI сервер Gunicorn
-CMD ["gunicorn", "--workers", "4", "--bind", "0.0.0.0:8000", "gallery:app"]
+CMD ["gunicorn", \
+     "--workers", "4", \
+     "--bind", "0.0.0.0:8000", \
+     "--access-logfile", "/var/log/gallery/access.log", \
+     "--error-logfile", "/var/log/gallery/error.log", \
+     "--log-level", "info", \
+     "--capture-output", \
+     "gallery:app"]

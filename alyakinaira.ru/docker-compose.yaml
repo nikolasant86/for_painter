@@ -6,6 +6,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
+      # Добавляем директорию для записи логов
+      - /var/log/nginx:/var/log/nginx
       # Пробрасываем конфигурацию сайта
       - ./nginx/site.conf:/etc/nginx/conf.d/default.conf:ro
       # Пробрасываем фронтенд (HTML, CSS, JS)
