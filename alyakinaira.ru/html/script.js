@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const nextBtn = document.getElementById('nextBtn');
     if (prevBtn) prevBtn.style.display = 'none';
     if (nextBtn) nextBtn.style.display = 'none';
-    if (resetBtn) resetBtn.style.display = 'none'
+    if (resetBtn) resetBtn.style.display = 'none';
 
     let images = [];
     let currentIndex = 0;
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (closeBtn) closeBtn.onclick = closeModal;
 
-    // Функции перелистывания (исправлен синтаксис JS)
+    // Функции перелистывания
     function flipNext() {
         currentIndex = (currentIndex + 1) % images.length;
         modalImg.src = images[currentIndex];
@@ -138,8 +138,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-
-    // if (resetBtn) resetBtn.onclick = resetScale;
 
     // Навигация с клавиатуры
     document.addEventListener('keydown', (e) => {
@@ -185,108 +183,132 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function applyScale() {
         if (modalImg) {
-            // Комбинируем масштаб и перемещение в одном свойстве transform
             modalImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
         }
     }
 
-    // === ТАЧ-ЖЕСТЫ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ (ПЛАВНЫЙ ЗУМ И ТРЕХШАГОВЫЙ ТАП) ===
-let touchStartX = 0;
-let touchStartY = 0;
-let initialPinchDistance = 0; // Фиксируем начальное расстояние между пальцами
-let initialScaleOnPinch = 1;   // Запоминаем масштаб на старт жеста
-let lastTapTime = 0;
+    // === ТАЧ-ЖЕСТЫ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ ===
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let initialPinchDistance = 0;
+    let initialScaleOnPinch = 1;
+    let lastTapTime = 0;
 
-// Переменные для сдвига (панорамирования)
-let translateX = 0;
-let translateY = 0;
-let startCenterX = 0;
-let startCenterY = 0;
+    // Переменные для сдвига (панорамирования)
+    let translateX = 0;
+    let translateY = 0;
+    let startCenterX = 0;
+    let startCenterY = 0;
 
-if (modalImg) {
-    modalImg.addEventListener('touchstart', (e) => {
-        // 1. ОБРАБОТКА МНОГОШАГОВОГО ДВОЙНОГО ТАПА (Одним пальцем)
-        if (e.touches.length === 1) {
-            const currentTime = new Date().getTime();
-            const tapLength = currentTime - lastTapTime;
-            
-            if (tapLength < 300 && tapLength > 0) {
+    if (modalImg) {
+        modalImg.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                const currentTime = new Date().getTime();
+                const tapLength = currentTime - lastTapTime;
+                
+                if (tapLength < 300 && tapLength > 0) {
+                    e.preventDefault();
+
+                    if (scale < 1.45) {
+                        setCustomScale(1.5);
+                    } else if (scale >= 1.45 && scale < 1.95) {
+                        setCustomScale(2.0);
+                    } else {
+                        resetScale();
+                    }
+                }
+                lastTapTime = currentTime;
+            }
+
+            if (e.touches.length === 2) {
                 e.preventDefault();
 
-                // Трехшаговая логика: 100% -> 150% -> 200% -> 100%
-                if (scale < 1.45) {
-                    setCustomScale(1.5); // Шаг 1: 150%
-                } else if (scale >= 1.45 && scale < 1.95) {
-                    setCustomScale(2.0); // Шаг 2: 200%
-                } else {
-                    resetScale();        // Шаг 3: Сброс до 100%
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                
+                initialPinchDistance = Math.hypot(dx, dy);
+                initialScaleOnPinch = scale;
+
+                startCenterX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - translateX;
+                startCenterY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - translateY;
+            }
+        }, { passive: false });
+
+        modalImg.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                const currentPinchDistance = Math.hypot(dx, dy);
+
+                if (initialPinchDistance > 0) {
+                    const pinchRatio = currentPinchDistance / initialPinchDistance;
+                    let newScale = initialScaleOnPinch * pinchRatio;
+                    newScale = Math.min(Math.max(newScale, 1), 4);
+                    scale = newScale;
+                }
+
+                if (scale > 1) {
+                    const currentCenterX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+                    const currentCenterY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+
+                    translateX = currentCenterX - startCenterX;
+                    translateY = currentCenterY - startCenterY;
+                }
+
+                applyScale();
+            }
+        }, { passive: false });
+
+        modalImg.addEventListener('touchend', (e) => {
+            if (e.touches.length < 2) {
+                initialPinchDistance = 0;
+                if (scale < 1) {
+                    resetScale();
                 }
             }
-            lastTapTime = currentTime;
+        });
+    }
+
+// === 3. ОПРЕДЕЛЕНИЕ ГЕОЛОКАЦИИ И ВСПОМОГАТЕЛЬНОЕ ПОПАП-ОКНО ===
+    const cityPopup = document.getElementById('city-popup');
+    const cityPopupText = document.getElementById('city-popup-text');
+    const closeCityBtn = document.getElementById('close-city-popup');
+
+    if (cityPopup && cityPopupText) {
+        if (closeCityBtn) {
+            closeCityBtn.addEventListener('click', () => {
+                cityPopup.classList.add('hidden');
+            });
         }
 
-        // 2. ИНИЦИАЛИЗАЦИЯ ЖЕСТА ДВУМЯ ПАЛЬЦАМИ
-        if (e.touches.length === 2) {
-            e.preventDefault();
-
-            // Точки для расчёта начальной дистанции зума
-            const dx = e.touches[0].clientX - e.touches[1].clientX;
-            const dy = e.touches[0].clientY - e.touches[1].clientY;
+        // Функция запроса к нашему Flask API
+        const fetchLocation = (clientIp = '') => {
+            const url = clientIp ? `/api/location?client_ip=${encodeURIComponent(clientIp)}` : '/api/location';
             
-            initialPinchDistance = Math.hypot(dx, dy); // Точная дистанция через Math.hypot
-            initialScaleOnPinch = scale;               // Фиксируем масштаб ДО начала движения
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success' && data.city) {
+                        cityPopupText.textContent = `Ваш город ${data.city}`;
+                        cityPopup.classList.remove('hidden');
+                    }
+                })
+                .catch(err => console.error('Ошибка определения местоположения:', err));
+        };
 
-            // Центр между пальцами для сдвига
-            startCenterX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - translateX;
-            startCenterY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - translateY;
-        }
-    }, { passive: false });
-
-    modalImg.addEventListener('touchmove', (e) => {
-        if (e.touches.length === 2) {
-            e.preventDefault();
-
-            // 1. ЛОГИКА ПЛАВНОГО ЗУМА (Pinch)
-            const dx = e.touches[0].clientX - e.touches[1].clientX;
-            const dy = e.touches[0].clientY - e.touches[1].clientY;
-            const currentPinchDistance = Math.hypot(dx, dy);
-
-            if (initialPinchDistance > 0) {
-                // Вычисляем плавный коэффициент изменения
-                const pinchRatio = currentPinchDistance / initialPinchDistance;
-                
-                // Рассчитываем новый масштаб пропорционально движению пальцев
-                let newScale = initialScaleOnPinch * pinchRatio;
-
-                // Ограничиваем масштаб от 1x до 4x (чтобы картинка не улетала в бесконечность)
-                newScale = Math.min(Math.max(newScale, 1), 4);
-
-                // Обновляем масштаб только если он меняется
-                scale = newScale;
-            }
-
-            // 2. ЛОГИКА СДВИГА (Pan) - Срабатывает параллельно и без скачков scale
-            if (scale > 1) {
-                const currentCenterX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-                const currentCenterY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-
-                translateX = currentCenterX - startCenterX;
-                translateY = currentCenterY - startCenterY;
-            }
-
-            // Применяем одновременно сдвиг и новый плавный масштаб
-            applyScale();
-        }
-    }, { passive: false });
-
-    modalImg.addEventListener('touchend', (e) => {
-        // Если пальцы подняты и масштаб меньше 1, сбрасываем в дефолт
-        if (e.touches.length < 2) {
-            initialPinchDistance = 0;
-            if (scale < 1) {
-                resetScale();
-            }
-        }
-    });
-}
+        // Шаг 1: Пробуем узнать публичный IP напрямую из браузера клиента
+        fetch('https://api.ipify.org?format=json')
+            .then(res => res.json())
+            .then(data => {
+                // Успешно получили IP клиента, передаем во Flask
+                fetchLocation(data.ip);
+            })
+            .catch(err => {
+                console.warn('Не удалось определить IP клиента напрямую, вызываем резервный метод сервера:', err);
+                // Если api.ipify недоступен или заблокирован адблокером, делаем стандартный запрос
+                fetchLocation();
+            });
+    }
 });
