@@ -16,8 +16,10 @@ main {
 }
 
 .main-theme {
-    height: 800px;
+    height: auto;
     max-width: 100%;
+    padding: 0;
+    margin: 0;
 }
 
 @media (max-width: 768px) {
@@ -46,13 +48,13 @@ main {
     justify-content: space-between;
     align-items: center;
     max-width: 100%;
-    margin-left: 30px;
+    margin-left: 0;
     margin-right: 30px;
 }
 
 .logotip {
     margin-top: 10px;
-    margin-left: 30px;
+    margin-left: 10px;
     text-align: left;
     text-decoration: none;
     display: flex;
@@ -261,7 +263,7 @@ main {
 }
 
 .author-img {
-    max-width: 600px;
+    max-width: 450px;
     height: auto;
 }
 
@@ -325,6 +327,8 @@ main {
     align-items: center;
     max-width: 100%;
     text-align: center;
+    padding: 0;
+    margin: 0;
 }
 
 .projects {
@@ -334,11 +338,12 @@ main {
 }
 
 .project-title {
-    border: rgba(245, 242, 237, 0.952) 30px;
-    padding: 50px;
-    margin-top: 60px;
-    margin-left: 60px;
-    text-align: left;
+    text-align: justify;
+    font-family: Palatino, URW Palladio L, serif;
+    font-size: 25px;
+    padding: 0;
+    text-indent: 20px;
+    overflow-wrap: break-word;
 }
 
 .catalog-second-button {
@@ -413,7 +418,7 @@ main {
 }
 
 .third-block {
-    height: 600px;
+    height: auto;
     max-width: 100%;
     display: flex;
     justify-content: center;
@@ -539,39 +544,41 @@ main {
 
 .about-me-description {
     display: flex;
-    justify-content: center; /* Центр по горизонтали */
-    align-items: center; /* Центр по вертикали */
-    box-sizing: border-box;
+    justify-content: center;
 }
 
 .about-me-description-paragraf {
-    text-align: justify;
+    text-align: left;
     font-family: Palatino, URW Palladio L, serif;
-    font-size: 25px;
-    padding: 20px;
-    text-indent: 20px;
+    font-size: 1.2rem;
+    padding: 0;
+    margin-top: 0;
     max-width: 900px;
-    overflow-wrap: break-word;
 }
 
 @media (max-width: 768px) {
+    .about-me-section {
+        padding: 0;
+    }
+    
     .about-me-description-paragraf {
-        /* Включаем автоматический перенос слов по слогам */
         -webkit-hyphens: auto;
         hyphens: auto;
-        
-        text-align: justify; 
-        
-        /* Адаптируем размеры под узкие экраны */
-        font-size: 18px; 
-        padding: 20px;
-        text-indent: 20px;
+        padding: 20px; /* Убираем лишние боковые отступы */
+        font-size: 1.1rem;
     }
 }
 
 .about-me-section {
-    max-height: auto;
-    max-width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.about-me-title {
+    margin-bottom: 0;
+    text-align: left;
 }
 
 /* Стили для модального окна */
@@ -675,11 +682,11 @@ main {
 }
 
 .cv-description-paragraf {
-    text-align: justify;
+    text-align: left;
     font-family: Palatino, URW Palladio L, serif;
-    font-size: 21px;
+    font-size: 1.2rem;
     padding: 0;
-    text-indent: 20px;
+    margin: 5px;
     max-width: 900px;
 }
 
@@ -689,12 +696,11 @@ main {
         -webkit-hyphens: auto;
         hyphens: auto;
         
-        text-align: justify; 
+        text-align: left; 
         
         /* Адаптируем размеры под узкие экраны */
-        font-size: 18px; 
-        padding: 20px;
-        text-indent: 20px;
+        font-size: 1.2rem; 
+        padding: 0;
     }
 }
 
@@ -755,6 +761,7 @@ main {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding: 10px;
 }
 
 .project-block {
@@ -1093,4 +1100,29 @@ main {
         justify-content: center;
         text-align: center;
     }
+}
+
+/* Стили для иконки-кнопки в футере */
+.footer-logo-block {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.footer-icon-link {
+    display: inline-block;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.footer-icon-link:hover {
+    transform: translateY(-4px); /* Легкий эффект приподнимания при наведении */
+    opacity: 0.85;
+}
+
+.footer-icon-img {
+    width: 65px; /* Регулируйте ширину иконки под ваш дизайн */
+    height: auto;
+    display: block;
+    margin-left: 10px;
 }
