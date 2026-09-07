@@ -329,6 +329,7 @@ main {
     text-align: center;
     padding: 0;
     margin: 0;
+    font-size: 14px;
 }
 
 .projects {
@@ -340,8 +341,10 @@ main {
 .project-title {
     text-align: justify;
     font-family: Palatino, URW Palladio L, serif;
-    font-size: 25px;
+    font-size: 16px;
+    font-weight: bold;
     padding: 0;
+    margin-bottom: 0;
     text-indent: 20px;
     overflow-wrap: break-word;
 }
@@ -550,7 +553,8 @@ main {
 .about-me-description-paragraf {
     text-align: left;
     font-family: Palatino, URW Palladio L, serif;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
+    line-height: 1.4;
     padding: 0;
     margin-top: 0;
     max-width: 900px;
@@ -565,7 +569,8 @@ main {
         -webkit-hyphens: auto;
         hyphens: auto;
         padding: 20px; /* Убираем лишние боковые отступы */
-        font-size: 1.1rem;
+        font-size: 1.05rem;
+        margin: 0;
     }
 }
 
@@ -695,11 +700,11 @@ main {
         /* Включаем автоматический перенос слов по слогам */
         -webkit-hyphens: auto;
         hyphens: auto;
-        
+        line-height: 1.4;
         text-align: left; 
         
         /* Адаптируем размеры под узкие экраны */
-        font-size: 1.2rem; 
+        font-size: 1.05rem; 
         padding: 0;
     }
 }
