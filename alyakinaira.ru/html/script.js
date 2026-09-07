@@ -275,12 +275,22 @@ document.addEventListener('DOMContentLoaded', function() {
     const cityPopup = document.getElementById('city-popup');
     const cityPopupText = document.getElementById('city-popup-text');
     const closeCityBtn = document.getElementById('close-city-popup');
+    let cityPopupTimer = null; // Переменная для хранения таймера автозакрытия
+
+    // Функция скрытия окна с чисткой таймера
+    const hideCityPopup = () => {
+        if (cityPopup) {
+            cityPopup.classList.add('hidden');
+        }
+        if (cityPopupTimer) {
+            clearTimeout(cityPopupTimer);
+            cityPopupTimer = null;
+        }
+    };
 
     if (cityPopup && cityPopupText) {
         if (closeCityBtn) {
-            closeCityBtn.addEventListener('click', () => {
-                cityPopup.classList.add('hidden');
-            });
+            closeCityBtn.addEventListener('click', hideCityPopup);
         }
 
         // Функция запроса к нашему Flask API
@@ -293,6 +303,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (data.status === 'success' && data.city) {
                         cityPopupText.textContent = `Ваш город ${data.city}`;
                         cityPopup.classList.remove('hidden');
+
+                        // Запускаем таймер скрытия на 10 секунд после показа
+                        cityPopupTimer = setTimeout(hideCityPopup, 10000);
                     }
                 })
                 .catch(err => console.error('Ошибка определения местоположения:', err));
