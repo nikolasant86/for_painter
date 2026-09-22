@@ -1,0 +1,15 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    # Server URL для продуктовой среды Let's Encrypt
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: antonovn658@gmail.com   # <- Укажите ваш Email
+    privateKeySecretRef:
+      name: letsencrypt-prod-account-key
+    solvers:
+    - http01:
+        ingress:
+          class: nginx              # Используем ваш NGINX Ingress Controller
