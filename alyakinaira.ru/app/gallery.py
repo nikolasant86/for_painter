@@ -69,18 +69,19 @@ def get_image_info():
         app.logger.warning(f"API call failed: Invalid image_id '{image_id}'")
         return jsonify({"error": "Invalid image_id"}), 400
 
-    file_path = os.path.join(IMAGES_DIR, f"{image_id}.jpg")
-
+    # file_path = os.path.join(IMAGES_DIR, f"/nesessary/images/{image_id}.jpg")
+    file_path = f"/app/media/nesessary/images/{image_id}.jpg"
+    
     if not os.path.exists(file_path):
         app.logger.error(f"Image file not found: {file_path}")
-        return jsonify({"error": "Image not found"}), 404
+        return jsonify({"error": f"Image not found '{file_path}'"}), 404
 
     app.logger.info(f"Image info retrieved successfully for: {image_id}")
     return jsonify({
         "status": "success",
         "image_id": image_id,
         "size": os.path.getsize(file_path),
-        "url": f"/nesessary/images/{image_id}.jpg"
+        "url": f"/app/media/nesessary/images/{image_id}.jpg"
     })
 
 @app.route('/media/<path:filename>')

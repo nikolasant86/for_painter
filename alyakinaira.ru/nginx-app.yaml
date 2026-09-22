@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Pod
+metadata: 
+    name: nginx-app
+    namespace: for-painter
+spec:
+    containers:
+    - image: nginx:1.25-alpine
+      name: web-nginx
+      ports:
+      - containerPort: 80
+        protocol: TCP
+      resources:
+        limits:
+          cpu: "1"
+          memory: "256M"
+      volumeMounts:
+      - name: nginx-config-volume
+        mountPath: /etc/nginx/conf.d
+      - name: gallery-media-volume
+        mountPath: /usr/share/nginx/html
+    volumes:
+    - name: nginx-config-volume
+      configMap:
+          name: nginx-config-for-painter
+    - name: gallery-media-volume
+      persistentVolumeClaim:
+        claimName: gallery-media-pvc

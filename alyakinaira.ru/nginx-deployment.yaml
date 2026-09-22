@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: nginx-deployment
+    namespace: for-painter
+    labels:
+        app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+        containers:
+        - image: nginx:1.25-alpine
+          name: web-nginx
+          ports:
+          - containerPort: 80
+            protocol: TCP
+          resources:
+            limits:
+              cpu: "1"
+              memory: "256M"
+          volumeMounts:
+          - name: nginx-config-volume
+            mountPath: /etc/nginx/conf.d
+          - name: gallery-media-volume
+            mountPath: /usr/share/nginx/html
+        volumes:
+        - name: nginx-config-volume
+          configMap:
+              name: nginx-config-for-painter
+        - name: gallery-media-volume
+          persistentVolumeClaim:
+            claimName: gallery-media-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: nginx-service # 👈 Важно: именно это имя Nginx будет искать в сети кластера
+    namespace: for-painter
+spec:
+    selector:
+      app: nginx # Связывает Сервис с Подом из Деплоймента выше
+    ports:
+    - protocol: TCP
+      port: 80      # Порт, который слушает Сервис
+      targetPort: 80 # Внутренний порт контейнера Flask
+    type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+  namespace: for-painter
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: "/"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - alyakinaira.ru
+        - www.alyakinaira.ru
+      secretName: alyakinaira-gallery-new-tls
+  rules:
+    - host: alyakinaira.ru
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx-service
+                port:
+                  number: 80
+    - host: www.alyakinaira.ru
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx-service
+                port:
+                  number: 80

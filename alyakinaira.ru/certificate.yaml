@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: alyakinaira-gallery-tls
+  namespace: for-painter
+spec:
+  secretName: alyakinaira-gallery-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  dnsNames:
+  - alyakinaira.ru
+  - www.alyakinaira.ru
