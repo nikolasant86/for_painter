@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-exporter
+  namespace: kube-system
+  labels:
+    app: node-exporter
+spec:
+  selector:
+    matchLabels:
+      app: node-exporter
+  template:
+    metadata:
+      labels:
+        app: node-exporter
+    spec:
+      hostNetwork: true
+      hostPID: true
+      tolerations:
+      - effect: NoSchedule
+        operator: Exists # Запускаем на всех нодах кластера (мастер + воркеры)
+      containers:
+      - name: node-exporter
+        # Заменяем на официальный нативный образ сборщика
+        image: prom/node-exporter:v1.8.2
+        args:
+        - --path.procfs=/host/proc
+        - --path.sysfs=/host/sys
+        - --path.rootfs=/rootfs
+        - --web.listen-address=:9101
+        resources:
+          limits:
+            memory: 100Mi
+          requests:
+            cpu: 50m
+            memory: 30Mi
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: proc
+          mountPath: /host/proc
+          readOnly: true
+        - name: sys
+          mountPath: /host/sys
+          readOnly: true
+        - name: root
+          mountPath: /rootfs
+          readOnly: true
+      volumes:
+      - name: proc
+        hostPath:
+          path: /proc
+      - name: sys
+        hostPath:
+          path: /sys
+      - name: root
+        hostPath:
+          path: /
+---
+# === 2. KUBE-STATE-METRICS (Сбор метрик состояния подов, деплойментов, контейнеров) ===
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-state-metrics
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kube-state-metrics
+  template:
+    metadata:
+      labels:
+        app: kube-state-metrics
+    spec:
+      containers:
+      - name: kube-state-metrics
+        image: registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.13.0
+        ports:
+        - containerPort: 8080
+          name: http-metrics
+---
+# === 3. СЕРВИС ДЛЯ ВЫВОДА МЕТРИК НАРУЖУ ИЗ КЛАСТЕРА ===
+apiVersion: v1
+kind: Service
+metadata:
+  name: kube-state-metrics
+  namespace: kube-system
+spec:
+  type: NodePort # Пробрасываем порт из K8s наружу, чтобы Prometheus забрал метрики
+  ports:
+  - port: 8080
+    targetPort: 8080
+    nodePort: 30080 # Тот самый порт, который мы указали в prometheus.yml
+  selector:
+    app: kube-state-metrics
