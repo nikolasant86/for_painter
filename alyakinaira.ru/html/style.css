@@ -1168,3 +1168,112 @@ body.modal-open {
 #author-modal {
     touch-action: none;
 }
+
+/* Кнопки-стрелки на самой карточке проекта */
+.card-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.4);
+    color: #fff;
+    border: none;
+    font-size: 18px;
+    padding: 8px 12px;
+    cursor: pointer;
+    z-index: 10;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.3s ease, background 0.2s ease;
+}
+
+.gallery-item:hover .card-arrow {
+    opacity: 1; /* Показываем стрелочки при наведении */
+}
+
+.card-arrow:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.card-arrow.prev { left: 8px; }
+.card-arrow.next { right: 8px; }
+
+/* Стрелки внутри модального окна просмотра */
+.modal-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    border: none;
+    font-size: 30px;
+    padding: 15px 20px;
+    cursor: pointer;
+    z-index: 1020;
+    border-radius: 50%;
+    transition: background 0.3s ease, transform 0.2s ease;
+    user-select: none;
+}
+
+.modal-arrow:hover {
+    background: rgba(255, 255, 255, 0.35);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.modal-arrow.prev { left: 20px; }
+.modal-arrow.next { right: 20px; }
+
+/* Адаптив стрелок под мобильные экраны */
+@media (max-width: 768px) {
+    .card-arrow {
+        opacity: 0.8; /* На смартфонах показываем сразу */
+        font-size: 14px;
+        padding: 6px 10px;
+    }
+    .modal-arrow {
+        font-size: 24px;
+        padding: 10px 14px;
+    }
+    .modal-arrow.prev { left: 10px; }
+    .modal-arrow.next { right: 10px; }
+}
+
+/* Видео внутри карточки */
+.project-card-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Иконка "Play" поверх карточки */
+.video-play-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    z-index: 5;
+    pointer-events: none;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.gallery-item:hover .video-play-icon {
+    background: rgba(255, 0, 0, 0.8);
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* Полноэкранный плеер внутри модального окна */
+.modal-video-player {
+    max-width: 90vw;
+    max-height: 80vh;
+    outline: none;
+    border-radius: 8px;
+}
