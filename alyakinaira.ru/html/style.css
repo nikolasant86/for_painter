@@ -1140,11 +1140,20 @@ main {
     user-select: none;
     -webkit-user-drag: none;
     touch-action: none; /* Отключает стандартные жесты браузера во время перетаскивания */
-    transition: transform 0.05s linear; /* Плавный отклик при перетаскивании */
+    transform-origin: center center;
+    /* Плавный переход для перемещения и масштабирования */
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: transform;
 }
 
 #author-modal-img:active {
     cursor: grabbing;
+}
+
+#author-modal-img.is-dragging {
+    cursor: grabbing;
+    /* Убираем анимацию во время ручного перетаскивания пальцем/мышью для мгновенного отклика */
+    transition: none !important;
 }
 
 /* Блокировка прокрутки и изменений на основной странице при открытии модального окна */

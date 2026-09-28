@@ -325,7 +325,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // === МОДАЛЬНОЕ ОКНО И ПЕРЕМЕЩЕНИЕ ИЗОБРАЖЕНИЯ АВТОРА ===
+    // === МОДАЛЬНОЕ ОКНО, ДВОЙНОЙ ТАП / КЛИК И PINCH-TO-ZOOM ===
 (function initAuthorModal() {
     const authorLink = document.querySelector('.image-block .author-img-link');
     const authorModal = document.getElementById('author-modal');
@@ -337,18 +337,44 @@ document.addEventListener('DOMContentLoaded', function() {
     let isDragging = false;
     let startX = 0, startY = 0;
     let currentX = 0, currentY = 0;
+    
+    // Переменные для зума (масштабирования)
+    let scale = 1;
+    const baseScale = 1;
+    const maxScale = 4;
+    const minScale = 0.8;
 
-    // Функция для сброса масштаба страницы до исходного (1.0)
+    // Переменные для двойного тапа / клика
+    let lastTapTime = 0;
+
+    // Переменные для pinch-to-zoom (два пальца)
+    let initialPinchDistance = 0;
+    let initialScaleOnPinch = 1;
+
+    // Сброс масштаба страницы (viewport)
     function resetPageScale() {
         const viewport = document.querySelector('meta[name="viewport"]');
         if (viewport) {
             const originalContent = viewport.getAttribute('content');
-            // Временно переустанавливаем viewport, чтобы принудить браузер сбросить зум страницы
             viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0');
             setTimeout(() => {
                 viewport.setAttribute('content', originalContent || 'width=device-width, initial-scale=1.0');
             }, 100);
         }
+    }
+
+    // Применение трансформации к изображению
+    function updateTransform() {
+        authorModalImg.style.transform = `translate(${currentX}px, ${currentY}px) scale(${scale})`;
+    }
+
+    // Сброс всех параметров к исходному состоянию
+    function resetPosition() {
+        currentX = 0;
+        currentY = 0;
+        scale = 1;
+        authorModalImg.classList.remove('is-dragging');
+        updateTransform();
     }
 
     // Открытие модального окна
@@ -357,93 +383,149 @@ document.addEventListener('DOMContentLoaded', function() {
         authorModalImg.src = this.getAttribute('href');
         authorModal.classList.add('show');
         authorModal.style.display = 'flex';
-        
-        // Блокируем скролл и жест зума основной страницы
         document.body.classList.add('modal-open');
         resetPosition();
     });
 
-    // Функция закрытия
+    // Закрытие модального окна
     function closeModal() {
         authorModal.classList.remove('show');
         authorModal.style.display = 'none';
-        
-        // Снимаем блокировку с основной страницы
         document.body.classList.remove('modal-open');
-        
         resetPosition();
-        resetPageScale(); // Сбрасываем возможный масштабированный вид основной страницы
+        resetPageScale();
     }
 
-    function resetPosition() {
-        currentX = 0;
-        currentY = 0;
-        authorModalImg.style.transform = `translate(0px, 0px)`;
-    }
-
-    // 1. Закрытие по крестику
     if (closeAuthorBtn) {
         closeAuthorBtn.addEventListener('click', closeModal);
     }
 
-    // 2. Закрытие при клике на пустое место
     authorModal.addEventListener('click', function(e) {
         if (e.target === authorModal || e.target.classList.contains('modal-content-wrapper')) {
             closeModal();
         }
     });
 
-    // Предотвращаем стандартный зум жестами двумя пальцами внутри модального окна
-    authorModal.addEventListener('touchstart', function(e) {
-        if (e.touches.length > 1) {
+    // === ДВОЙНОЙ КЛИК / ТАП (+50% или 1.5x) ===
+    function handleDoubleTap(e) {
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTapTime;
+
+        if (tapLength < 300 && tapLength > 0) {
             e.preventDefault();
+            // Если изображение укрупнено — возвращаем к исходному размеру (1.0), иначе увеличиваем на 50% (1.5)
+            if (scale > 1.05) {
+                scale = 1;
+                currentX = 0;
+                currentY = 0;
+            } else {
+                scale = 1.5; // +50% к размеру
+            }
+            authorModalImg.classList.remove('is-dragging'); // Включаем плавную анимацию CSS
+            updateTransform();
+        }
+        lastTapTime = currentTime;
+    }
+
+    authorModalImg.addEventListener('dblclick', (e) => {
+        e.preventDefault();
+        if (scale > 1.05) {
+            scale = 1;
+            currentX = 0;
+            currentY = 0;
+        } else {
+            scale = 1.5;
+        }
+        authorModalImg.classList.remove('is-dragging');
+        updateTransform();
+    });
+
+    // === ПЕРЕМЕЩЕНИЕ И СЕНСОРНЫЕ ЖЕСТЫ (PINCH-TO-ZOOM) ===
+
+    authorModalImg.addEventListener('touchstart', (e) => {
+        handleDoubleTap(e);
+
+        if (e.touches.length === 1) {
+            // Начало перетаскивания одним пальцем
+            isDragging = true;
+            authorModalImg.classList.add('is-dragging'); // Отключаем плавность на время драга для быстрого отклика
+            startX = e.touches[0].clientX - currentX;
+            startY = e.touches[0].clientY - currentY;
+        } else if (e.touches.length === 2) {
+            // Начало масштабирования двумя пальцами (Pinch)
+            isDragging = false;
+            authorModalImg.classList.add('is-dragging');
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            initialPinchDistance = Math.hypot(dx, dy);
+            initialScaleOnPinch = scale;
         }
     }, { passive: false });
 
-    // === ПЕРЕМЕЩЕНИЕ ИЗОБРАЖЕНИЯ (Мышь и Touch/Палец) ===
-
-    function startDrag(e) {
-        if (e.touches && e.touches.length > 1) return; // Игнорируем мультитач
-        
-        isDragging = true;
-        
-        const pageX = e.touches ? e.touches[0].clientX : e.clientX;
-        const pageY = e.touches ? e.touches[0].clientY : e.clientY;
-
-        startX = pageX - currentX;
-        startY = pageY - currentY;
-
-        authorModalImg.style.cursor = 'grabbing';
-    }
-
-    function moveDrag(e) {
-        if (!isDragging) return;
-        
-        // Отменяем стандартное поведение прокрутки браузера
+    authorModalImg.addEventListener('touchmove', (e) => {
         if (e.cancelable) e.preventDefault();
 
-        const pageX = e.touches ? e.touches[0].clientX : e.clientX;
-        const pageY = e.touches ? e.touches[0].clientY : e.clientY;
+        if (e.touches.length === 1 && isDragging) {
+            // Перемещение пальцем
+            currentX = e.touches[0].clientX - startX;
+            currentY = e.touches[0].clientY - startY;
+            updateTransform();
+        } else if (e.touches.length === 2 && initialPinchDistance > 0) {
+            // Жест сведения/разведения 2 пальцев
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            const currentPinchDistance = Math.hypot(dx, dy);
 
-        currentX = pageX - startX;
-        currentY = pageY - startY;
+            const pinchRatio = currentPinchDistance / initialPinchDistance;
+            let newScale = initialScaleOnPinch * pinchRatio;
 
-        authorModalImg.style.transform = `translate(${currentX}px, ${currentY}px)`;
-    }
+            // Ограничения зума
+            scale = Math.min(Math.max(newScale, minScale), maxScale);
+            updateTransform();
+        }
+    }, { passive: false });
 
-    function stopDrag() {
-        isDragging = false;
-        authorModalImg.style.cursor = 'grab';
-    }
+    authorModalImg.addEventListener('touchend', (e) => {
+        if (e.touches.length < 2) {
+            initialPinchDistance = 0;
+        }
+        if (e.touches.length === 0) {
+            isDragging = false;
+            authorModalImg.classList.remove('is-dragging'); // Возвращаем плавность transition
+            
+            // Если сжали меньше нормального размера — плавно возвращаем к 1.0
+            if (scale < baseScale) {
+                scale = baseScale;
+                currentX = 0;
+                currentY = 0;
+                updateTransform();
+            }
+        }
+    });
 
-    // События мыши (Desktop)
-    authorModalImg.addEventListener('mousedown', startDrag);
-    window.addEventListener('mousemove', moveDrag);
-    window.addEventListener('mouseup', stopDrag);
+    // === ПЕРЕМЕЩЕНИЕ МЫШЬЮ НА ДЕСКТОПЕ ===
 
-    // События касаний (Mobile)
-    authorModalImg.addEventListener('touchstart', startDrag, { passive: false });
-    window.addEventListener('touchmove', moveDrag, { passive: false });
-    window.addEventListener('touchend', stopDrag);
+    authorModalImg.addEventListener('mousedown', (e) => {
+        if (e.button !== 0) return; // Только левая кнопка мыши
+        isDragging = true;
+        authorModalImg.classList.add('is-dragging');
+        startX = e.clientX - currentX;
+        startY = e.clientY - currentY;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        if (e.cancelable) e.preventDefault();
+        currentX = e.clientX - startX;
+        currentY = e.clientY - startY;
+        updateTransform();
+    });
+
+    window.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            authorModalImg.classList.remove('is-dragging');
+        }
+    });
 })();
 });
