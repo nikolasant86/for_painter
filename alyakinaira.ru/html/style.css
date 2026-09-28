@@ -343,7 +343,7 @@ main {
     font-family: Palatino, URW Palladio L, serif;
     font-size: 16px;
     font-weight: bold;
-    padding: 0;
+    padding: 20px;
     margin-bottom: 0;
     text-indent: 20px;
     overflow-wrap: break-word;
@@ -829,9 +829,9 @@ main {
 /* Контейнер галереи */
 .project-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 колонки на десктопе */
+    grid-template-columns: repeat(1, 1fr); /* 1 колонка на десктопе */
     gap: 28px; /* Отступы между постами, как в Insta */
-    max-width: 935px; /* Стандартная ширина контента Instagram */
+    max-width: 500px; /* Стандартная ширина контента Instagram */
     margin: 0 auto padding-bottom;
     padding: 0 20px;
     box-sizing: border-box;
@@ -892,8 +892,9 @@ main {
 /* Адаптивность под мобильные устройства */
 @media (max-width: 768px) {
     .project-grid {
-        grid-template-columns: repeat(2, 1fr); /* 2 колонки на планшетах */
+        grid-template-columns: repeat(1, 1fr); /* 2 колонки на планшетах */
         gap: 10px; /* Меньше отступы */
+        max-width: 250px;
     }
     .item-text {
         font-size: 14px;
@@ -902,8 +903,9 @@ main {
 
 @media (max-width: 480px) {
     .project-grid {
-        grid-template-columns: repeat(3, 1fr); /* 3 в ряд на мобилках, прямо как в приложении Instagram */
-        gap: 3px; /* Минимальные швы */
+        grid-template-columns: repeat(1, 1fr); /* 3 в ряд на мобилках, прямо как в приложении Instagram */
+        gap: 10px; /* Минимальные швы */
+        max-width: 250px;
         padding: 0;
     }
     
@@ -1130,4 +1132,30 @@ main {
     height: auto;
     display: block;
     margin-left: 10px;
+}
+
+/* Стили для модального окна автора */
+#author-modal-img {
+    cursor: grab;
+    user-select: none;
+    -webkit-user-drag: none;
+    touch-action: none; /* Отключает стандартные жесты браузера во время перетаскивания */
+    transition: transform 0.05s linear; /* Плавный отклик при перетаскивании */
+}
+
+#author-modal-img:active {
+    cursor: grabbing;
+}
+
+/* Блокировка прокрутки и изменений на основной странице при открытии модального окна */
+body.modal-open {
+    overflow: hidden !important;
+    touch-action: none !important;
+    -webkit-overflow-scrolling: none !important;
+    overscroll-behavior: none !important;
+}
+
+/* На всякий случай гарантируем отмену пользовательского зума на модальном окне */
+#author-modal {
+    touch-action: none;
 }

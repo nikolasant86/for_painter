@@ -324,4 +324,126 @@ document.addEventListener('DOMContentLoaded', function() {
                 fetchLocation();
             });
     }
+
+    // === МОДАЛЬНОЕ ОКНО И ПЕРЕМЕЩЕНИЕ ИЗОБРАЖЕНИЯ АВТОРА ===
+(function initAuthorModal() {
+    const authorLink = document.querySelector('.image-block .author-img-link');
+    const authorModal = document.getElementById('author-modal');
+    const authorModalImg = document.getElementById('author-modal-img');
+    const closeAuthorBtn = document.getElementById('close-author-modal');
+
+    if (!authorLink || !authorModal || !authorModalImg) return;
+
+    let isDragging = false;
+    let startX = 0, startY = 0;
+    let currentX = 0, currentY = 0;
+
+    // Функция для сброса масштаба страницы до исходного (1.0)
+    function resetPageScale() {
+        const viewport = document.querySelector('meta[name="viewport"]');
+        if (viewport) {
+            const originalContent = viewport.getAttribute('content');
+            // Временно переустанавливаем viewport, чтобы принудить браузер сбросить зум страницы
+            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0');
+            setTimeout(() => {
+                viewport.setAttribute('content', originalContent || 'width=device-width, initial-scale=1.0');
+            }, 100);
+        }
+    }
+
+    // Открытие модального окна
+    authorLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        authorModalImg.src = this.getAttribute('href');
+        authorModal.classList.add('show');
+        authorModal.style.display = 'flex';
+        
+        // Блокируем скролл и жест зума основной страницы
+        document.body.classList.add('modal-open');
+        resetPosition();
+    });
+
+    // Функция закрытия
+    function closeModal() {
+        authorModal.classList.remove('show');
+        authorModal.style.display = 'none';
+        
+        // Снимаем блокировку с основной страницы
+        document.body.classList.remove('modal-open');
+        
+        resetPosition();
+        resetPageScale(); // Сбрасываем возможный масштабированный вид основной страницы
+    }
+
+    function resetPosition() {
+        currentX = 0;
+        currentY = 0;
+        authorModalImg.style.transform = `translate(0px, 0px)`;
+    }
+
+    // 1. Закрытие по крестику
+    if (closeAuthorBtn) {
+        closeAuthorBtn.addEventListener('click', closeModal);
+    }
+
+    // 2. Закрытие при клике на пустое место
+    authorModal.addEventListener('click', function(e) {
+        if (e.target === authorModal || e.target.classList.contains('modal-content-wrapper')) {
+            closeModal();
+        }
+    });
+
+    // Предотвращаем стандартный зум жестами двумя пальцами внутри модального окна
+    authorModal.addEventListener('touchstart', function(e) {
+        if (e.touches.length > 1) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    // === ПЕРЕМЕЩЕНИЕ ИЗОБРАЖЕНИЯ (Мышь и Touch/Палец) ===
+
+    function startDrag(e) {
+        if (e.touches && e.touches.length > 1) return; // Игнорируем мультитач
+        
+        isDragging = true;
+        
+        const pageX = e.touches ? e.touches[0].clientX : e.clientX;
+        const pageY = e.touches ? e.touches[0].clientY : e.clientY;
+
+        startX = pageX - currentX;
+        startY = pageY - currentY;
+
+        authorModalImg.style.cursor = 'grabbing';
+    }
+
+    function moveDrag(e) {
+        if (!isDragging) return;
+        
+        // Отменяем стандартное поведение прокрутки браузера
+        if (e.cancelable) e.preventDefault();
+
+        const pageX = e.touches ? e.touches[0].clientX : e.clientX;
+        const pageY = e.touches ? e.touches[0].clientY : e.clientY;
+
+        currentX = pageX - startX;
+        currentY = pageY - startY;
+
+        authorModalImg.style.transform = `translate(${currentX}px, ${currentY}px)`;
+    }
+
+    function stopDrag() {
+        isDragging = false;
+        authorModalImg.style.cursor = 'grab';
+    }
+
+    // События мыши (Desktop)
+    authorModalImg.addEventListener('mousedown', startDrag);
+    window.addEventListener('mousemove', moveDrag);
+    window.addEventListener('mouseup', stopDrag);
+
+    // События касаний (Mobile)
+    authorModalImg.addEventListener('touchstart', startDrag, { passive: false });
+    window.addEventListener('touchmove', moveDrag, { passive: false });
+    window.addEventListener('touchend', stopDrag);
+})();
 });
