@@ -18,7 +18,7 @@ spec:
       containers:
       - name: gallery-app
         # Укажите адрес вашего Docker-образа бэкенда (собранного из вашего Dockerfile)
-        image: nikolavasant/alyakinaira-gallery:v1.0.8
+        image: nikolavasant/alyakinaira-gallery:v1.0.3
         ports:
         - containerPort: 8000
         env:
