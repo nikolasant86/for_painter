@@ -18,7 +18,7 @@ status:
   accessModes:
     - ReadWriteMany
   capacity:
-    storage: 100Gi
+    storage: 10Gi
   conditions:
     - type: Unused
       status: 'False'
@@ -31,6 +31,6 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 100Gi
+      storage: 10Gi
   volumeName: gallery-media-pv
   volumeMode: Filesystem
