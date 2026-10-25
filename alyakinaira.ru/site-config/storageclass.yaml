@@ -1,0 +1,13 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+    name: nfs-storage
+    annotations:
+        storageclass.kubernetes.io/is-default-class: "true"
+provisioner: nfs.csi.k8s.io
+volumeBindingMode: Immediate
+allowVolumeExpansion: true
+parameters:
+    server: 192.168.1.100
+    share: /home/nikolas/projects/for_painter/alyakinaira.ru/
+reclaimPolicy: Retain
