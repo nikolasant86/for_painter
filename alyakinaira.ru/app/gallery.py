@@ -159,7 +159,7 @@ else:
     app.logger.setLevel(logging.INFO)
 
 PORT = int(os.environ.get("GALLERY_PORT", "8000"))
-IMAGES_DIR = os.environ.get("GALLERY_IMAGES_DIR", "/app/media")
+IMAGES_DIR = os.environ.get("GALLERY_IMAGES_DIR", "/app/media/nesessary/images")
 
 PROJECT_MAP = {
     "terem-muhi-book": "Терем мухи",
