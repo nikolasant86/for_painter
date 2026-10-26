@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gallery # 👈 Важно: именно это имя Nginx будет искать в сети кластера
+  namespace: for-painter
+spec:
+  selector:
+    app: gallery # Связывает Сервис с Подом из Деплоймента выше
+  ports:
+  - protocol: TCP
+    port: 8000      # Порт, который слушает Сервис
+    targetPort: 8000 # Внутренний порт контейнера Flask
+  type: ClusterIP # Сервис доступен только внутри кластера K8s

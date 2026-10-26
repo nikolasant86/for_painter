@@ -1,0 +1,98 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    namespace: for-painter
+    name: nginx-config-for-painter
+data:
+    site.conf: |
+
+        server {
+            listen 80;
+            server_name localhost;
+            # alyakinaira.ru www.alyakinaira.ru; # Укажи здесь домен или IP сервера
+ 
+            # Добавляем логирование для http
+            # access_log /var/log/nginx/access.log;
+            # error_log /var/log/nginx/error.log;
+
+            # Специальный путь для проверочных файлов Certbot (ACME Challenge)
+            # location /.well-known/acme-challenge/ {
+            #    root /var/www/certbot;
+            # }
+
+            # Все остальные HTTP-запросы перенаправляем на защищенный HTTPS
+            location / {
+            #    return 301 https://$host$request_uri;
+        #        return 200 'OK';
+            try_files $uri $uri/ =404;
+            }
+        # }
+
+        # 2. Блок для HTTPS (Основная работа вашего приложения)
+        # server {
+            # listen 443 ssl http2;
+            # server_name alyakinaira.ru www.alyakinaira.ru;
+
+            # Настройки для определения реального IP
+            set_real_ip_from  192.168.1.1; 
+            real_ip_header    X-Forwarded-For;
+            real_ip_recursive on;
+
+            # Добавляем логирование для https
+            # access_log /var/log/nginx/access.log;
+            # error_log /var/log/nginx/error.log;
+
+            # 🌟 Пути к SSL-сертификатам Let's Encrypt
+            # ssl_certificate /etc/letsencrypt/live/alyakinaira.ru/fullchain.pem;
+            # ssl_certificate_key /etc/letsencrypt/live/alyakinaira.ru/privkey.pem;
+
+            # Настройки безопасности SSL
+            # ssl_protocols TLSv1.2 TLSv1.3;
+            # ssl_ciphers HIGH:!aNULL:!MD5;
+            # ssl_prefer_server_ciphers on;
+
+            root /usr/share/nginx/html;
+            index index.html;
+
+            # Раздача статического фронтенда (главная, css, js)
+            # location / {
+            #    try_files $uri $uri/ =404;
+            #}
+
+            # 🌟 Перенаправляем динамические страницы книг (например: /project/terem-muhi) во Flask
+            location /project/ {
+                proxy_pass http://gallery:8000;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+
+            # 🌟 Универсальный эндпоинт для API картинок
+            location /api/ {
+                proxy_pass http://gallery:8000;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+
+            # Перенаправляем запросы к картинкам во Flask
+            location /media/ {
+                proxy_pass http://gallery:8000;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+
+            location /app/media/nesessary/images/ {
+                alias /usr/share/nginx/html/nesessary/images/;
+                try_files $uri $uri/ =404;
+                # proxy_pass http://gallery:8000;
+                # proxy_set_header Host $host;
+                # proxy_set_header X-Real-IP $remote_addr;
+                # proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                # proxy_set_header X-Forwarded-Proto $scheme;
+            }
+        }

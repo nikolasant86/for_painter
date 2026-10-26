@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gallery-deployment
+  namespace: for-painter
+  labels:
+    app: gallery
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: gallery
+  template:
+    metadata:
+      labels:
+        app: gallery
+    spec:
+      containers:
+      - name: gallery-app
+        # Укажите адрес вашего Docker-образа бэкенда (собранного из вашего Dockerfile)
+        image: nikolavasant/alyakinaira-gallery:v1.0.3
+        ports:
+        - containerPort: 8000
+        env:
+        - name: GALLERY_PORT
+          value: "8000"
+        - name: GALLERY_IMAGES_DIR
+          value: "/app/media"
+        resources:
+          limits:
+            cpu: "1"
+            memory: "256Mi"
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+        volumeMounts:
+        # Монтируем сетевой диск с картинками в папку /app/media
+        - name: media-storage
+          mountPath: /app/media
+          readOnly: true # Монтируем как readonly, как в docker-compose
+        - name: logs-storage
+          mountPath: /var/log/gallery
+      
+      volumes:
+      # Подключаем ваше существующее NFS-хранилище через PVC
+      - name: media-storage
+        persistentVolumeClaim:
+          claimName: gallery-media-pvc
+      - name: logs-storage
+        emptyDir: {} 
