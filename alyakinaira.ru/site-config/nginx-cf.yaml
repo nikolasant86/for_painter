@@ -18,7 +18,7 @@ data:
             index index.html;
 
             location /project/ {
-                proxy_pass http://gallery:8000;
+                proxy_pass http://proxy-cache:8001; # http://gallery:8000;
                 proxy_set_header Host $host;
                 proxy_set_header X-Real-IP $remote_addr;
                 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -26,7 +26,7 @@ data:
             }
 
             location /api/ {
-                proxy_pass http://gallery:8000;
+                proxy_pass http://proxy-cache:8001; # http://gallery:8000;
                 proxy_set_header Host $host;
                 proxy_set_header X-Real-IP $remote_addr;
                 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -34,11 +34,15 @@ data:
             }
 
             location /media/ {
-                proxy_pass http://gallery:8000;
+                proxy_pass http://proxy-cache:8001; # http://gallery:8000;
                 proxy_set_header Host $host;
                 proxy_set_header X-Real-IP $remote_addr;
                 proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
                 proxy_set_header X-Forwarded-Proto $scheme;
+
+                proxy_buffers 16 256k;          # Выделяем 16 буферов по 256 КБ под оперативную память
+                proxy_buffer_size 256k;         # Стартовый размер буфера для заголовков
+                proxy_busy_buffers_size 512k;   # Максимальный размер буфера при высокой нагрузке
             }
 
             location /app/media/nesessary/images/ {
